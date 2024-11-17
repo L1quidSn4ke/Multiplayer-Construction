@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Job UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .status {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        .current-tool {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+        }
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status">Job Status: Not Started</div>
+        <div class="current-tool">Current Tool: None</div>
+        <div class="buttons">
+            <button onclick="startJob()">Start Job</button>
+            <button onclick="equipTool('hammer')">Equip Hammer</button>
+            <button onclick="equipTool('saw')">Equip Saw</button>
+            <button onclick="equipTool('cement')">Equip Cement</button>
+            <button onclick="completeJob()">Complete Job</button>
+        </div>
+    </div>
+
+    <script>
+        function startJob() {
+            fetch(`https://${GetParentResourceName()}/startJob`, {
+                method: 'POST'
+            });
+        }
+
+        function equipTool(tool) {
+            fetch(`https://${GetParentResourceName()}/equipTool`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tool: tool })
+            });
+        }
+
+        function completeJob() {
+            fetch(`https://${GetParentResourceName()}/completeJob`, {
+                method: 'POST'
+            });
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'updateUI') {
+                document.querySelector('.status').textContent = `Job Status:
+${event.data.jobStatus}`;
+                document.querySelector('.current-tool').textContent =
+`Current Tool: ${event.data.currentTool}`;
+            }
+        });
+    </script>
+</body>
+</html>
